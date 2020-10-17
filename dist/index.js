@@ -10,32 +10,27 @@ var Observable = /** @class */ (function () {
     }
     return Observable;
 }());
-var index = (function () {
-    var _proxy;
-    return function useReactive(value) {
-        var _a = react.useState(value), valueState = _a[0], setValueState = _a[1];
-        if (_proxy) {
-            _proxy = _proxy;
-        }
-        else {
-            var observable = new Observable(valueState);
-            _proxy = new Proxy(observable, {
-                set: function (object, prop, newValue, receiver) {
-                    if (prop === 'value' && receiver === _proxy) {
-                        object[prop] = newValue;
-                        setValueState(newValue);
-                        return true;
-                    }
-                    else {
-                        return false;
-                    }
-                },
-            });
-        }
+function useReactive(value) {
+    var _a = react.useState(value), valueState = _a[0], setValueState = _a[1];
+    return react.useMemo(function () {
+        var _proxy;
+        var observable = new Observable(valueState);
+        _proxy = new Proxy(observable, {
+            set: function (object, prop, newValue, receiver) {
+                if (prop === 'value' && receiver === _proxy) {
+                    object[prop] = newValue;
+                    setValueState(newValue);
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            },
+        });
         return _proxy;
-    };
-})();
+    }, []);
+}
 
 exports.Observable = Observable;
-exports.default = index;
+exports.default = useReactive;
 //# sourceMappingURL=index.js.map
