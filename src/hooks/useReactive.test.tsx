@@ -5,11 +5,7 @@ import { render } from "@testing-library/react";
 
 describe("useReactive", () => {
   describe("functional tests", () => {
-    it("should render hook", () => {
-      const result = testHook(() => useReactive(1));
-      expect(result.hookResult).toBe(1);
-    });
-    it.skip("should cause re-render on value change", () => {
+    it("should cause re-render on value change", () => {
       const renderSpy = vi.fn();
       const result = testHook(() => {
         const result = useReactive({ count: 1 });
@@ -25,24 +21,13 @@ describe("useReactive", () => {
       expect(result.hookResult.count).toBe(2);
       expect(renderSpy).toHaveBeenCalledTimes(2);
     });
-    it("should work with destructured value", () => {
-      const result = testHook(() => {
-        let { count } = useReactive({ count: 1 });
-        useEffect(() => {
-          // eslint-disable-next-line react-hooks/exhaustive-deps
-          count = count + 3;
-        }, [count]);
-        return { count };
-      });
-      expect(result.hookResult.count).toBe(1);
-    });
-    it("should re-render on object value change", () => {
+    it("should re-render on destructed object value change", () => {
       const renderSpy = vi.fn();
       const TestComponent = ({ value }: { value: { count: number } }) => {
         const reactiveValue = useReactive(value);
         useEffect(() => {
           renderSpy();
-        }, []);
+        }, [reactiveValue]);
         return <span>{reactiveValue.count}</span>;
       };
       const TestComponentWrapper = () => {

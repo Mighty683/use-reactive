@@ -53,12 +53,13 @@ function buildProxyCopy<V>(value: V, onSet: () => void): V {
  * reactivity will be lost for the destructured properties.
  * It will work as read-only.
  */
-export function useReactive<T>(value: T): T {
-  const [, forceRerender] = useState(false);
-  const [valueState] = useState(
+export function useReactive<T extends object>(value: T): T {
+  const [valueState, setValue] = useState(
     buildProxyCopy<T>(value, () => {
       if (isMountedRef.current) {
-        forceRerender((prev) => !prev);
+        setValue((v) => {
+          return { ...v };
+        });
       }
     }),
   );
