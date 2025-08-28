@@ -11,7 +11,7 @@ describe("useReactive", () => {
         const result = useReactive({ count: 1 });
         useEffect(() => {
           renderSpy();
-        }, [result]);
+        }, [result.count]);
         return result;
       });
       expect(result.hookResult.count).toBe(1);
@@ -24,11 +24,12 @@ describe("useReactive", () => {
     it("should re-render on destructed object value change", () => {
       const renderSpy = vi.fn();
       const TestComponent = ({ value }: { value: { count: number } }) => {
-        const reactiveValue = useReactive(value);
+        const proxyValue = useReactive(value);
+        const { count } = proxyValue;
         useEffect(() => {
           renderSpy();
-        }, [reactiveValue]);
-        return <span>{reactiveValue.count}</span>;
+        }, [count]);
+        return <span>{count}</span>;
       };
       const TestComponentWrapper = () => {
         const { changedValue } = useReactive({
